@@ -1,15 +1,16 @@
 import { useForm } from 'react-hook-form';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import { validatePesel } from './validatePesel';
 import { validateNip } from './validateNip';
 import { FormErrorMessage } from './FormErrorMessage';
 
-// TODO:
-// * walidacja aspect ratio 1:1 - poprawka
+const peselPattern = /^[0-9]{11}$/;
+const nipPattern = /^[0-9]{10}$/;
 
 function App() {
     const {
         register,
+        trigger,
         handleSubmit,
         formState: { errors },
     } = useForm({
@@ -41,11 +42,21 @@ function App() {
     const [type, setType] = useState('natural-person');
     const acceptedFileExtension = ['.jpg', '.jpeg'];
     const [selectedFile, setSelectedFile] = useState();
-
-    const peselPattern = /^[0-9]{11}$/;
-    const nipPattern = /^[0-9]{10}$/;
+    const [dimensions, setDimensions] = useState();
 
     const photoRef = useRef();
+
+    const src = useMemo(() => (selectedFile ? URL.createObjectURL(selectedFile) : null), [selectedFile]);
+
+    const onImgLoad = (event) => {
+        setDimensions({ height: event.target.naturalHeight, width: event.target.naturalWidth });
+    };
+
+    useEffect(() => {
+        if (dimensions) {
+            trigger('photo');
+        }
+    }, [dimensions, trigger]);
 
     return (
         <div className="flex justify-center items-center bg-sky-100 min-h-screen">
@@ -144,8 +155,7 @@ function App() {
                                         acceptedFileExtension.includes('.' + value[0].name.split('.')[1]) ||
                                         'Zły format zdjęcia',
                                     aspectRatio: () =>
-                                        photoRef.current.naturalWidth / photoRef.current.naturalHeight === 1 ||
-                                        'Zdjęcie musi być w kwadracie',
+                                        dimensions.width / dimensions.height === 1 || 'Zdjęcie musi być w kwadracie',
                                 },
                                 onChange: (e) => setSelectedFile(e.target.files[0]),
                             })}
@@ -154,12 +164,13 @@ function App() {
                         />
                         <FormErrorMessage errors={errors} name="photo" />
 
-                        {selectedFile ? (
+                        {src ? (
                             <img
-                                src={URL.createObjectURL(selectedFile)}
+                                src={src}
                                 alt=""
                                 className="max-w-xxs mx-auto my-4 ring ring-sky-700"
                                 ref={photoRef}
+                                onLoad={onImgLoad}
                             />
                         ) : null}
 
