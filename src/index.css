@@ -15,3 +15,11 @@ code {
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+label:focus-within {
+    @apply text-sky-600;
+}
+
+input {
+    @apply text-black;
+}
