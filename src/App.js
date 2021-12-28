@@ -6,6 +6,7 @@ import { FormErrorMessage } from './FormErrorMessage';
 
 const peselPattern = /^[0-9]{11}$/;
 const nipPattern = /^[0-9]{10}$/;
+const acceptedFileExtension = ['.jpg', '.jpeg'];
 
 function App() {
     const {
@@ -40,7 +41,6 @@ function App() {
     };
 
     const [type, setType] = useState('natural-person');
-    const acceptedFileExtension = ['.jpg', '.jpeg'];
     const [selectedFile, setSelectedFile] = useState();
     const [dimensions, setDimensions] = useState();
 
@@ -60,7 +60,7 @@ function App() {
 
     return (
         <div className="flex justify-center items-center bg-sky-100 min-h-screen">
-            <div className="max-w-xl w-full bg-slate-50 p-8 flex flex-col gap-6 rounded-xl shadow-2xl border my-8">
+            <div className="md:max-w-xl max-w-sm w-full bg-slate-50 md:p-8 p-4 flex flex-col gap-6 rounded-xl shadow-2xl border my-8">
                 <header>
                     <h1 className="text-sky-600 font-bold text-center text-2xl">Nowy kontrahent</h1>
                 </header>
